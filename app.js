@@ -4,26 +4,6 @@
  * https://freetailhackers.com/music-hacks/                              *
  ************************************************************************/
 
-var clientID = '28b05a26f8f8bec9d27bea7c938337ff';
-//https://soundcloud.com/delatropic/sets/music-hacks-party-playlist
-var playlistID = '313538315';
-
-// Sends an XmlHttpRequest to Soundcloud, including our client ID
-// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
-function sendScXhr(url, callback, responseType) {
-  var request = new XMLHttpRequest();
-  if (responseType !== undefined) {
-    request.responseType = responseType;
-  }
-  request.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      callback(this.response);
-    }
-  };
-  request.open('GET', url + '?client_id=' + clientID, true);
-  request.send();
-}
-
 // A reusable deck Vue Component
 // https://vuejs.org/v2/guide/components.html
 Vue.component('audio-deck', {
@@ -53,12 +33,8 @@ Vue.component('audio-deck', {
   },
   computed: {
     labelArt: function () {
+      // We're going to want to get some artwork for the deck's track
       var artworkUrl = 'none';
-      if (this.deck.track.artwork_url) {
-        artworkUrl = 'url(' + this.deck.track.artwork_url + ')';
-      } else if (this.deck.track.waveform_url) {
-        artworkUrl = 'url(' + this.deck.track.waveform_url + ')';
-      }
       return { 
         backgroundImage: artworkUrl
       };
@@ -81,32 +57,19 @@ new Vue({
   data: function () {
     return {
       faderPosition: 0,
-      tracks: [],
+      tracks: [],             // Will hold our playlist
       decks: {
         left: {track: false},
         right: {track: false}
       }
     };
   },
-  // Load our playlist when the app starts
   created: function() {
-    var app = this;
-    sendScXhr('https://api.soundcloud.com/playlists/' + playlistID, 
-      function (playlistData) {
-        console.log(JSON.parse(playlistData));
-        app.tracks = JSON.parse(playlistData).tracks;
-      }
-    );
+    // We need to load our playlist when the app starts
   },
   methods: {
     loadTrack: function (side, track) {
-      var deck = this.decks[side];
-      sendScXhr(track.stream_url, function(audioData) {
-          console.log(audioData);
-        }, 
-        // Request the track in a format compatible with Web Audio API
-        'arraybuffer' 
-      );
+      // We need to load the mp3 file for playback
     }
   }
 });
