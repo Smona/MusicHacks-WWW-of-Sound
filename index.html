@@ -21,14 +21,23 @@
   <body>
     <img src="logo.png" id="logo"/>
     <div id="app">
-      <!--The left deck is at full volume when the fader == 0-->
-      <audio-deck :deck="decks.left" :gain="1 - faderPosition"></audio-deck>
+      <div class="deck">
+        <div class="record" :class="{ spinning: playing !== false}">
+          <div class="record-label"
+          :style="labelArt"></div>
+        </div>
+        <button type="button" :disabled="track == false"
+        @click="togglePlay">
+          <i class="material-icons">
+            {{ (playing !== false) ? "stop" : "play_arrow" }}
+          </i>
+        </button>
+      </div>
       <div>
         <!--List of tracks in our playlist-->
         <div class="tracklist">
           <div v-for="track in tracks">
             <button type="button" @click="loadTrack('left', track)"><</button>
-            <!--<img :src="track.artwork_url" :alt="track.title + ' album art'"/>-->
             {{ track.title }}
             <button type="button" @click="loadTrack('right', track)">></button>
           </div>
@@ -36,8 +45,6 @@
         <input type="range" class="crossfader" v-model="faderPosition"
           min="0" max="1" step=".01"/>
       </div>
-      <!--The right deck is at full volume when the fader == 1-->
-      <audio-deck :deck="decks.right" :gain="faderPosition"></audio-deck>
     </div>
 
   </body>

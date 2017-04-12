@@ -4,27 +4,20 @@
  * https://freetailhackers.com/music-hacks/                              *
  ************************************************************************/
 
-// A reusable deck Vue Component
-// https://vuejs.org/v2/guide/components.html
-Vue.component('audio-deck', {
-  props: ['deck', 'gain'],
+// The root Vue Instance
+new Vue({
+  el: '#app',
   data: function () {
     return {
-      playing: false
+      faderPosition: 0,       // The position of our crossfader, from 0-1
+      tracks: [],             // Will hold our playlist
+      playing: false,         // Whether or not the track is playing
+      track: false,           // Will hold our currently playing track
     };
   },
-  // Templates are made much easier with ES6 template literals:
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
-  template: '<div class="deck">' +
-              '<div class="record" :class="{ spinning: playing !== false}">' +
-                '<div class="record-label"' +
-                ':style="labelArt"></div>' +
-              '</div>' +
-              '<button type="button" :disabled="deck.track == false"' +
-              '@click="togglePlay">' +
-                '<i class="material-icons">{{ (playing !== false) ? "stop" : "play_arrow" }}</i>' + 
-              '</button>' +
-            '</div>',
+  created: function() {
+    // We need to load our playlist when the app starts
+  },
   computed: {
     labelArt: function () {
       // We're going to want to get some artwork for the deck's track
@@ -35,35 +28,15 @@ Vue.component('audio-deck', {
     }
   },
   methods: {
+    loadTrack: function (track) {
+      // We need to load the mp3 file for playback
+    },
     togglePlay: function () {
-      if (playingBuffer) {
+      if (this.playing) {
         // Track was playing, we need to pause it
       } else {
         // Track was paused, we need to play it
       }
-    }
-  }
-});
-
-// The root Vue Instance
-new Vue({
-  el: '#app',
-  data: function () {
-    return {
-      faderPosition: 0,
-      tracks: [],             // Will hold our playlist
-      decks: {
-        left: {track: false},
-        right: {track: false}
-      }
-    };
-  },
-  created: function() {
-    // We need to load our playlist when the app starts
-  },
-  methods: {
-    loadTrack: function (side, track) {
-      // We need to load the mp3 file for playback
     }
   }
 });
