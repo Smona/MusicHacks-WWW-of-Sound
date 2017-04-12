@@ -2,11 +2,6 @@ var clientID = '28b05a26f8f8bec9d27bea7c938337ff';
 //https://soundcloud.com/delatropic/sets/music-hacks-party-playlist
 var playlistID = '313538315';
 
-// Create an audio context. All Web Audio components are created through
-// this context object.
-// https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
-var audioCtx = new AudioContext();
-
 // Sends an XmlHttpRequest to Soundcloud, including our client ID
 // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
 function sendScXhr(url, callback, responseType) {
@@ -29,8 +24,7 @@ Vue.component('audio-deck', {
   props: ['deck', 'gain'],
   data: function () {
     return {
-      playing: false,
-      gainNode: audioCtx.createGain()
+      playing: false
     };
   },
   // Templates are made much easier with ES6 template literals:
@@ -45,17 +39,7 @@ Vue.component('audio-deck', {
                 '<i class="material-icons">{{ (playing !== false) ? "pause" : "play_arrow" }}</i>' + 
               '</button>' +
             '</div>',
-  created: function () {
-    // Connect the gain node to the speakers and initialize its value
-    // when the component is created:
-    this.gainNode.connect(audioCtx.destination);
-    this.gainNode.gain.value = this.gain;
-  },
   watch: {
-    // Binds the gain node's value to our Vue prop
-    gain: function (newGain) {
-      this.gainNode.gain.value = newGain;
-    },
     // Make sure the deck is paused before we load a new track
     track: function () {
       if (this.playing !== false) {
@@ -65,23 +49,10 @@ Vue.component('audio-deck', {
   },
   methods: {
     togglePlay: function () {
-      var playingBuffer = this.playing;
       if (playingBuffer) {
-        // Stopping and disconnecting the buffer is important 
-        // as it frees the buffer from memory
-        playingBuffer.stop(0);
-        playingBuffer.disconnect(this.gainNode);
-        this.playing = false;
+        // Track was playing, we need to pause it
       } else {
-        // Most Web Audio sources can only be started once, so
-        // we create a new buffer whenever playback starts
-        var source = audioCtx.createBufferSource();
-        source.buffer = this.deck.track.audioData; // Load the decoded audio data
-        source.onended = this.togglePlay;          // Pause the deck when the song finishes
-        source.connect(this.gainNode);
-        source.start(0);                           // Start playback of the buffer
-
-        this.playing = source; // Store the playing buffer so we can stop it later
+        // Track was paused, we need to play it
       }
     }
   }
@@ -119,10 +90,7 @@ new Vue({
     loadTrack: function (side, track) {
       var deck = this.decks[side];
       sendScXhr(track.stream_url, function(audioData) {
-          audioCtx.decodeAudioData(audioData, function(decodedData) {
-            deck.track = track;
-            deck.track.audioData = decodedData;
-          });
+          console.log(audioData);
         }, 
         // Request the track in a format compatible with Web Audio API
         'arraybuffer' 
