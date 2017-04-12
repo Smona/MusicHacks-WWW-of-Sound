@@ -1,10 +1,17 @@
+/************************************************************************* 
+ * Web DJ Demo                                                           *
+ * Written by Mason Bourgeois (@lsmonal) for Music Hacks ATX 04.15.2017  *
+ * https://freetailhackers.com/music-hacks/                              *
+ ************************************************************************/
+
 var clientID = '28b05a26f8f8bec9d27bea7c938337ff';
 //https://soundcloud.com/delatropic/sets/music-hacks-party-playlist
 var playlistID = '313538315';
 
 // Create an audio context. All Web Audio components are created through
-// this context object.
+// this context object. (notice the name can vary across browsers)
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioCtx = new AudioContext();
 
 // Sends an XmlHttpRequest to Soundcloud, including our client ID
@@ -38,11 +45,11 @@ Vue.component('audio-deck', {
   template: '<div class="deck">' +
               '<div class="record" :class="{ spinning: playing !== false}">' +
                 '<div class="record-label"' +
-                ':style="{ backgroundImage: \'url(\' + deck.track.artwork_url + \')\' }"></div>' +
+                ':style="labelArt"></div>' +
               '</div>' +
               '<button type="button" :disabled="deck.track == false"' +
               '@click="togglePlay">' +
-                '<i class="material-icons">{{ (playing !== false) ? "pause" : "play_arrow" }}</i>' + 
+                '<i class="material-icons">{{ (playing !== false) ? "stop" : "play_arrow" }}</i>' + 
               '</button>' +
             '</div>',
   created: function () {
@@ -55,12 +62,19 @@ Vue.component('audio-deck', {
     // Binds the gain node's value to our Vue prop
     gain: function (newGain) {
       this.gainNode.gain.value = newGain;
-    },
-    // Make sure the deck is paused before we load a new track
-    track: function () {
-      if (this.playing !== false) {
-        this.togglePlay();
+    }
+  },
+  computed: {
+    labelArt: function () {
+      var artworkUrl = 'none';
+      if (this.deck.track.artwork_url) {
+        artworkUrl = 'url(' + this.deck.track.artwork_url + ')';
+      } else if (this.deck.track.waveform_url) {
+        artworkUrl = 'url(' + this.deck.track.waveform_url + ')';
       }
+      return { 
+        backgroundImage: artworkUrl
+      };
     }
   },
   methods: {
@@ -91,17 +105,12 @@ Vue.component('audio-deck', {
 new Vue({
   el: '#app',
   data: function () {
-    function emptyDeck () { 
-      return {
-        track: false
-      };
-    }
     return {
       faderPosition: 0,
       tracks: [],
       decks: {
-        left: emptyDeck(),
-        right: emptyDeck()
+        left: {track: false},
+        right: {track: false}
       }
     };
   },
