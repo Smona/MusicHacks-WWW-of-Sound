@@ -45,12 +45,6 @@ Vue.component('audio-deck', {
                 '<i class="material-icons">{{ (playing !== false) ? "stop" : "play_arrow" }}</i>' + 
               '</button>' +
             '</div>',
-  watch: {
-    // Binds the gain node's value to our Vue prop
-    gain: function (newGain) {
-      this.gainNode.gain.value = newGain;
-    }
-  },
   computed: {
     labelArt: function () {
       var artworkUrl = 'none';

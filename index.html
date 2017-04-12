@@ -28,7 +28,6 @@
         <div class="tracklist">
           <div v-for="track in tracks">
             <button type="button" @click="loadTrack('left', track)"><</button>
-            <!--<img :src="track.artwork_url" :alt="track.title + ' album art'"/>-->
             {{ track.title }}
             <button type="button" @click="loadTrack('right', track)">></button>
           </div>
