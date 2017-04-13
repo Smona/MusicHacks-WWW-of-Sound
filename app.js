@@ -5,6 +5,7 @@
  ************************************************************************/
 
 // The root Vue Instance
+// https://vuejs.org/v2/guide/instance.html
 new Vue({
   el: '#app',
   data: function () {
