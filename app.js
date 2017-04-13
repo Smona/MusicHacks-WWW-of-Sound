@@ -52,7 +52,7 @@ new Vue({
     return {
       faderPosition: 0,
       tracks: [],             // Will hold our playlist
-      decks: {
+      decks: {                // We now need to represent the state of both decks
         left: {track: false},
         right: {track: false}
       }
